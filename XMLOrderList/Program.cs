@@ -14,12 +14,12 @@ namespace XMLOrderList
             {
                 // Пробую открыть xml документ, и в случае успеха передаю полученный экземпляр XmlDocument в метод для добавления заказа в существующий файл
                 doc.Load("Orders.xml");
-                WriteOrderToXmlFile(doc);
+                doc = WriteOrderToXmlFile(doc);
             }
             catch (Exception ex)
             {
-                // В случае ошибок, создаю новый путем вызова метода с передачей null вместо экземпляра XmlDocument
-                WriteOrderToXmlFile(null);
+                // В случае ошибок, создаю новый путем вызова метода с передачей null вместо экземпляра XmlDocument               
+                doc = WriteOrderToXmlFile(null);
                 Console.WriteLine(ex.Message);
             }
 
@@ -34,16 +34,8 @@ namespace XMLOrderList
         /// Метод используемый для добавления нового заказа в существующий xml документ, или создание нового xml документа.
         /// </summary>
         /// <param name="doc">Передается ссылка на экземпляр XmlDocument, если нужно добавить заказ в существующий файл, либо null в случае если формируется новый xml файл.</param>
-        static void WriteOrderToXmlFile(XmlDocument doc)
+        static XmlDocument WriteOrderToXmlFile(XmlDocument doc)
         {
-            Console.Write("Хотите добавить новый заказ ? [Y/N]: ");
-            ConsoleKey key = Console.ReadKey(true).Key;
-            if (key.ToString() != "Y" && key.ToString() != "y")
-            {
-                ShowNode(doc.DocumentElement);
-                return;
-            }
-            Console.WriteLine();
 
             XmlNode rootElem;
             if (doc == null)
@@ -56,6 +48,14 @@ namespace XMLOrderList
             {
                 rootElem = doc.DocumentElement;
             }
+
+            Console.Write("Хотите добавить новый заказ ? [Y/N]: ");
+            ConsoleKey key = Console.ReadKey(true).Key;
+            if (key.ToString() != "Y" && key.ToString() != "y")
+            {
+                return doc;
+            }
+            Console.WriteLine();
 
             // Создаю экземпляр нового заказа
             Order orderObj = new Order();
@@ -94,6 +94,7 @@ namespace XMLOrderList
                 Console.WriteLine("Error, new order hasn't been added !!! Press ane key to continue...");
                 Console.ReadKey();
             }
+            return doc;
         }
 
         /// <summary>
@@ -102,37 +103,40 @@ namespace XMLOrderList
         /// <param name="node"></param>
         static void ShowNode(XmlNode orders)
         {
-            foreach (XmlNode order in orders)
+            if (orders.HasChildNodes)
             {
-                Console.WriteLine();
-                if (order.Attributes != null)
+                foreach (XmlNode order in orders)
                 {
-                    foreach (XmlAttribute attr in order.Attributes)
+                    Console.WriteLine();
+                    if (order.Attributes != null)
                     {
-                        Console.WriteLine("Order ID = {0}", attr.Value);
-                        Console.WriteLine("================");
-                    }
-                }
-                if (order.HasChildNodes)
-                {
-                    XmlNodeList products = order.ChildNodes;
-                    foreach (XmlNode product in products)
-                    {
-                        if (product.HasChildNodes)
+                        foreach (XmlAttribute attr in order.Attributes)
                         {
-                            XmlNodeList productFields = product.ChildNodes;
-                            foreach (XmlNode productField in productFields)
+                            Console.WriteLine("Order ID = {0}", attr.Value);
+                            Console.WriteLine("================");
+                        }
+                    }
+                    if (order.HasChildNodes)
+                    {
+                        XmlNodeList products = order.ChildNodes;
+                        foreach (XmlNode product in products)
+                        {
+                            if (product.HasChildNodes)
                             {
-                                if (productField.NodeType == XmlNodeType.Element)
+                                XmlNodeList productFields = product.ChildNodes;
+                                foreach (XmlNode productField in productFields)
                                 {
-                                    Console.Write(" {0} = {1},", productField.Name, productField.InnerText);
+                                    if (productField.NodeType == XmlNodeType.Element)
+                                    {
+                                        Console.Write(" {0} = {1},", productField.Name, productField.InnerText);
+                                    }
+                                    else
+                                    {
+                                        Console.Write(" {0} = {1}", product.Name, product.InnerText);
+                                    }
                                 }
-                                else
-                                {
-                                    Console.Write(" {0} = {1}", product.Name, product.InnerText);
-                                }
+                                Console.WriteLine();
                             }
-                            Console.WriteLine();
                         }
                     }
                 }
