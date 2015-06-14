@@ -73,7 +73,7 @@ namespace XMLOrderList
 
                     Products.Add(prod);
                 }
-                catch (Exception ex)
+                catch
                 {
                     return null;
                 }

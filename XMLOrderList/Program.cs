@@ -9,7 +9,7 @@ namespace XMLOrderList
     {
         static void Main(string[] args)
         {
-            XmlDocument doc = new XmlDocument(); 
+            XmlDocument doc = new XmlDocument();
             try
             {
                 // Пробую открыть xml документ, и в случае успеха передаю полученный экземпляр XmlDocument в метод для добавления заказа в существующий файл
@@ -89,7 +89,8 @@ namespace XMLOrderList
                 doc.Save("Orders.xml");
                 doc.Load("Orders.xml");
             }
-            else {
+            else
+            {
                 Console.WriteLine("Error, new order hasn't been added !!! Press ane key to continue...");
                 Console.ReadKey();
             }
@@ -117,7 +118,6 @@ namespace XMLOrderList
                     XmlNodeList products = order.ChildNodes;
                     foreach (XmlNode product in products)
                     {
-                        //Console.WriteLine(product.Name);
                         if (product.HasChildNodes)
                         {
                             XmlNodeList productFields = product.ChildNodes;
@@ -127,16 +127,13 @@ namespace XMLOrderList
                                 {
                                     Console.Write(" {0} = {1},", productField.Name, productField.InnerText);
                                 }
-                                else {
+                                else
+                                {
                                     Console.Write(" {0} = {1}", product.Name, product.InnerText);
                                 }
                             }
                             Console.WriteLine();
                         }
-                        else {
-                         
-                        }
-                        //Console.Write(" {0} = {1}", product.Name, product.Value);
                     }
                 }
             }
